@@ -61,23 +61,6 @@ AC_FUNC_REALLOC
 AC_FUNC_STRTOD
 AC_CHECK_FUNCS([gettimeofday memset sqrt strchr strerror strrchr strstr strtol])
 
-# Set install paths.
-if test "x$prefix" = "xNONE" ; then
-  prefix="/usr/local"
-fi
-
-if test "x$exec_prefix" = "xNONE" ; then
-  exec_prefix=$prefix
-fi
-
-# Checks for ffmpeg
-if test -d "ffmpeg"; then
-   ac_configure_args="$ac_configure_args --enable-gpl --enable-version3 --disable-stripping --enable-libx264"
-   AC_CONFIG_SUBDIRS([ffmpeg])
-else
-   AC_MSG_ERROR([ffmpeg directory is not found. please git submodule init; git submodule update;])
-fi
-
 # Setting for generate Makefile location
 AC_CONFIG_FILES([Makefile])
 
