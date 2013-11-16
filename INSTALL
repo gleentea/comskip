@@ -1,1 +1,29 @@
-/usr/share/automake-1.11/INSTALL
+*********************************************
+comskip のインストール方法(仮)
+(comskip Installation Instructions (temporary))
+*********************************************
+
+Copyright (C) 2013 Hiroyuki Nagata
+
+   Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.  This file is offered as-is,
+without warranty of any kind.
+
+基本インストール
+(Basic Install)
+==================
+
+ $ git clone https://github.com/Hiroyuki-Nagata/comskip.git
+ $ cd path/to/comskip/
+ $ ./bootstrap
+
+ # ffmpegのディレクトリに移動してビルドする
+ $ cd ffmpeg
+ $ ./configure --enable-gpl --enable-version3 --disable-stripping --enable-libx264 --enable-shared
+ $ make && make install
+
+ # comskip本体をビルドする
+ $ cd ../
+ $ ./configure
+ $ make
