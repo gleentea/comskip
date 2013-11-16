@@ -152,7 +152,12 @@ extern char		osname[];
 
 extern int xPos,yPos,lMouseDown;
 extern int framenum_infer;
+
+#ifdef _WIN32
 extern struct _stati64 instat;
+#else
+extern struct stat instat;
+#endif
 
 #define filesize                stat.st_size
 
@@ -904,7 +909,13 @@ extern void                     DecodeOnePicture(FILE * f, double pts, double le
 int                             CEW_init(int argc, char *argv[]);
 void                            Init_XDS_block();
 FILE*                           myfopen(const char * f, char * m);
+
+#ifdef _WIN32
 static int                      mystat(char * f, struct _stati64 * s);
+#else
+static int                      mystat(char * f, struct stat * s);
+#endif
+
 int				myremove(char * f);
 int                             max(int i,int j);
 int                             min(int i,int j);
@@ -7014,29 +7025,6 @@ bool AnsiToUnicode16(const char* in_Src, wchar_t* out_Dst, int in_MaxLen)
   // done
   return true;
 }
-#else
-/**
- * Implementation for Linux/UNIX/Unix-like
- */
-bool AnsiToUnicode16(const char* in_Src, wchar_t* out_Dst, int in_MaxLen)
-{
-  /** TODO: Refer iconv source code
-  int ret = 0;
-  size_t inlen = strlen( src );
-  size_t outlen = len;
-  char* inbuf = src;
-  char* outbuf = dst;
-  iconv_t cd;
-  cd = iconv_open( "GBK", "UTF-8" );
-  if ( cd != (iconv_t)-1 ){
-    ret = iconv( cd, &inbuf, &inlen, &outbuf, &outlen );
-    if( ret != 0 )
-      printf("iconv failed err: %s\n", strerror(errno) );
-    iconv_close( cd );
-  }
-  */
-  return true;
-}
 #endif
 
 FILE* myfopen( const char * f, char * m)
@@ -7054,25 +7042,30 @@ FILE* myfopen( const char * f, char * m)
 #endif
 }
 
+#ifdef _WIN32
+/** WIN32 stat function */
 static int mystat( char * f, struct _stati64 * s)
 {
-#ifdef _WIN32
   wchar_t wf[2000];
   int n;
   n= AnsiToUnicode16(f, wf, 2000);
   return(_wstati64(wf,s));
-#else
-  // TODO: Linux substitute function
-  return;
-#endif
 }
+#else
+/** Unix/Unix-like stat function */
+static int mystat( char * f, struct stat * s)
+{
+  return(stat(f,s));
+}
+#endif
+
 
 static int myremove( char * f)
 {
+#ifdef _WIN32
   wchar_t wf[2000];
   int n;
   n= AnsiToUnicode16(f, wf, 2000);
-#ifdef _WIN32
   return(_wremove(wf));
 #else
   return(unlink(f));
