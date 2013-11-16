@@ -1807,7 +1807,6 @@ int main (int argc, char ** argv)
 	    while(1)
 	      {
 		ReviewResult();
-		vo_refresh();
 #ifdef _WIN32
 		Sleep((DWORD)100);
 #else

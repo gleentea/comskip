@@ -2874,12 +2874,12 @@ int DetectCommercials(int f, double pts)
   return 0;
 }
 
-int Max(int i,int j)
+int max(int i,int j)
 {
   return(i>j?i:j);
 }
 
-int Min(int i,int j)
+int min(int i,int j)
 {
   return(i<j?i:j);
 }
@@ -7072,7 +7072,11 @@ static int myremove( char * f)
   wchar_t wf[2000];
   int n;
   n= AnsiToUnicode16(f, wf, 2000);
+#ifdef _WIN32
   return(_wremove(wf));
+#else
+  return(unlink(f));
+#endif
 }
 
 FILE* LoadSettings(int argc, char ** argv)
@@ -10093,7 +10097,13 @@ void LoadLogoMaskData(void)
       DumpEdgeMasks();
     }
   memset(data, 0, sizeof(data));
+
+#ifdef _WIN32
   _flushall();
+#else
+  fflush(NULL);
+#endif
+
   if (output_default)
     {
       txt_file = myfopen(out_filename, "r");
@@ -10167,7 +10177,14 @@ void Debug(int level, char* fmt, ...)
   vsprintf(debugText, fmt, ap);
   va_end(ap);
 
-  if (output_console)	_cprintf("%s", debugText);
+  if (output_console)
+    {
+#ifdef _WIN32
+      _cprintf("%s", debugText);
+#else
+      printf("%s", debugText);
+#endif
+    }
 
   if (!log_file)
     log_file = myfopen(logfilename, "a+");

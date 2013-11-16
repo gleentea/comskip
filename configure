@@ -4117,8 +4117,106 @@ $as_echo "#define DONATORS 1" >>confdefs.h
 # Checks for libraries.
 #
 
-# Checks for argtable2
+# Search PATH
+CFLAGS="$CFLAGS -I/usr/local/include"
+LDFLAGS="$LDFLAGS -L/usr/local/lib"
 
+# Checks for libm
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for exp in -lm" >&5
+$as_echo_n "checking for exp in -lm... " >&6; }
+if ${ac_cv_lib_m_exp+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lm  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char exp ();
+int
+main ()
+{
+return exp ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_m_exp=yes
+else
+  ac_cv_lib_m_exp=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_m_exp" >&5
+$as_echo "$ac_cv_lib_m_exp" >&6; }
+if test "x$ac_cv_lib_m_exp" = xyes; then :
+  LIBS="-lm $LIBS" has_m=1
+else
+  has_m=0
+fi
+
+if test $has_m = 0; then
+  as_fn_error $? "\"ERROR: cannot find libm.\"" "$LINENO" 5
+fi
+
+# Checks for pthread
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for pthread_create in -lpthread" >&5
+$as_echo_n "checking for pthread_create in -lpthread... " >&6; }
+if ${ac_cv_lib_pthread_pthread_create+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lpthread  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char pthread_create ();
+int
+main ()
+{
+return pthread_create ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_pthread_pthread_create=yes
+else
+  ac_cv_lib_pthread_pthread_create=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_pthread_pthread_create" >&5
+$as_echo "$ac_cv_lib_pthread_pthread_create" >&6; }
+if test "x$ac_cv_lib_pthread_pthread_create" = xyes; then :
+  LIBS="-lpthread $LIBS" has_pthread=1
+else
+  has_pthread=0
+fi
+
+if test $has_pthread = 0; then
+  as_fn_error $? "\"ERROR: cannot find pthread.\"" "$LINENO" 5
+fi
+
+# Checks for argtable2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for arg_print_option in -largtable2" >&5
 $as_echo_n "checking for arg_print_option in -largtable2... " >&6; }
 if ${ac_cv_lib_argtable2_arg_print_option+:} false; then :
@@ -4156,7 +4254,7 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_argtable2_arg_print_option" >&5
 $as_echo "$ac_cv_lib_argtable2_arg_print_option" >&6; }
 if test "x$ac_cv_lib_argtable2_arg_print_option" = xyes; then :
-  has_argtable2=1
+  LIBS="-largtable2 $LIBS" has_argtable2=1
 else
   has_argtable2=0
 fi
