@@ -40,6 +40,22 @@ AS_CASE([$host_cpu],
 )
 AC_DEFINE([ARCH], [ARCH], [CPU is $host_cpu])
 
+# Checks for filesize
+AC_CHECK_SIZEOF(short)
+AC_CHECK_SIZEOF(int)
+AC_CHECK_SIZEOF(long)
+AC_CHECK_SIZEOF(long long)
+AC_CHECK_SIZEOF(unsigned char *)
+AC_SYS_LARGEFILE
+
+m4_define([file_offset_bits], [$ac_cv_sys_file_offset_bits])
+
+if test "x$ac_cv_sys_file_offset_bits" != "xno"; then
+    AC_MSG_RESULT([FILE_OFFSET_BITS=$ac_cv_sys_file_offset_bits])
+    FILE_OFFSET_BITS=file_offset_bits()
+    AC_SUBST(FILE_OFFSET_BITS)
+fi
+
 # Define variables
 AC_DEFINE([DONATOR], [1], [Description of DONATOR])
 AC_DEFINE([DONATORS], [1], [Description of DONATORS])

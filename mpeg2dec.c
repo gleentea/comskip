@@ -1645,8 +1645,6 @@ int main (int argc, char ** argv)
 	    else
 #endif
 	      {
-
-
 		is->seek_req = 0;
 		framenum = 0;
 		pts_offset = 0.0;
@@ -1661,42 +1659,40 @@ int main (int argc, char ** argv)
 		initial_apts = 0;
 		audio_samples = 0;
 	      }
-	    //                   best_effort_timestamp = AV_NOPTS_VALUE;
-	    //                   is->pFrame->pkt_pts = AV_NOPTS_VALUE;
-	    //                    is->pFrame->pkt_dts = AV_NOPTS_VALUE;
-
-
 	  }
+
+	// 
 	ret=av_read_frame(is->pFormatCtx, packet);
 	if ((selftest == 3 && retries==0 && is->video_clock >=30.0)) ret=AVERROR_EOF;
 	if(ret < 0 )
 	  {
 	    if (ret == AVERROR_EOF || url_feof(is->pFormatCtx->pb))
 	      {
-                if (retries < live_tv_retries /* && ( url_feof (is->pFormatCtx->pb) || selftest != 0) */) {
+                if (retries < live_tv_retries) {
 		  if (retries==0) retry_target = is->video_clock;
 		  file_close();
-		  Debug( 1,"\nRetry=%d at frame=%d, time=%8.2f seconds\n", retries, framenum, retry_target);
+
+		  // debug info
+		  char debug_error_code[256];
+		  sprintf(debug_error_code, "%d (detail is here:http://www.ffmpeg.org/doxygen/trunk/group__lavu__error.html)", ret);
+
+		  Debug(1,"\nReturnCode=%s\n", (ret == AVERROR_EOF) ? "AVERROR_EOF (End of file.)" : debug_error_code);
+		  Debug(1,"\nRetry=%d at frame=%d, time=%8.2f seconds\n", retries, framenum, retry_target);
+
+#ifdef _WIN32
 		  Sleep(4000L);
+#else
+		  sleep(4);
+#endif
+
 		  file_open();
 		  Set_seek(is, retry_target, is->duration);
 		  retries++;
 		  selftest = 0;
 		  goto again;
                 }
-
-
-
-                // xxxxxxxxx
-                /*
-		  if(url_ferror(is->pFormatCtx->pb) == 0) {
-		  continue;
-		  } else
-                */
 		break;
 	      }
-
-
 	  }
 
 
@@ -1716,14 +1712,6 @@ int main (int argc, char ** argv)
 			is->duration,
 			is->filename);
 		fclose(sample_file);
-		/*
-		  if (tries ==  0 && fabs((double) av_q2d(is->video_st->time_base)* ((double)(packet->pts - is->video_st->start_time - is->seek_pos ))) > 2.0) {
-		  is->seek_req=1;
-		  is->seek_pos = 20.0 / av_q2d(is->video_st->time_base);
-		  is->seek_flags = AVSEEK_FLAG_BYTE;
-		  tries++;
-		  } else
-		*/
 		exit(1);
 	      }
 #endif
@@ -1735,22 +1723,13 @@ int main (int argc, char ** argv)
 	  }
 	else
 	  {
-	    /*
-	      ccDataLen = (int)packet->size;
-	      for (i=0; i<ccDataLen; i++) {
-	      ccData[i] = packet->data[i];
-	      }
-	      dump_data(ccData, (int)ccDataLen);
-	      if (output_srt)
-	      process_block(ccData, (int)ccDataLen);
-	      if (processCC) ProcessCCData();
-	    */
+	    // do nothing
 	  }
 	av_free_packet(packet);
 #ifdef SELFTEST
 	if (selftest == 1 && is->seek_req == 0 && framenum == 500)
 	  {
-	    double frame_delay = av_q2d(is->video_st->codec->time_base)* is->video_st->codec->ticks_per_frame;         // <------------------------ frame delay is the time in seconds till the next frame
+	    double frame_delay = av_q2d(is->video_st->codec->time_base)* is->video_st->codec->ticks_per_frame;              // <------------------------ frame delay is the time in seconds till the next frame
 	    Set_seek(is, 30.0, 10000.0);
 	    framenum++;
 	  }
@@ -1763,8 +1742,7 @@ int main (int argc, char ** argv)
 
     if (framenum > 0)
       {
-	// (int) byterate = (fpos_t) fileendpos / (int) framenum
-	// fpos_t is struct
+	// (int) byterate = (fpos_t) fileendpos / (int) framenum : fpos_t is struct
 #ifdef _WIN32
 	byterate = fileendpos / framenum;
 #else

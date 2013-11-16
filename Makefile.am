@@ -6,9 +6,7 @@ changelog: configure.ac
         git log --stat --name-only --date=short --abbrev-commit > ChangeLog
 
 # install directory
-comskipexecdir         = $(datarootdir)/@PACKAGE@
-comskipexec_PROGRAMS   = comskip
-comskipdir             = $(pkglibdir)
+bin_PROGRAMS           = comskip
 
 # sources
 comskip_SOURCES        = comskip.c mpeg2dec.c video_out_dx.c comskip.h

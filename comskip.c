@@ -26,7 +26,6 @@
    #define __USE_XOPEN2K        1
    #define __STDC_FORMAT_MACROS 1   // needed for unix formatting output
    #define _POSIX_C_SOURCE      1
-   #define _FILE_OFFSET_BITS    64
     
    #include <stdio.h>
    #include <unistd.h>
