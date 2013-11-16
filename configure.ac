@@ -32,6 +32,18 @@ case "$host" in
                 ;;
 esac
 
+# Checks for HostCPU
+AS_CASE([$host_cpu],
+  [i?86],   [ARCH=i386],
+  [x86_64], [ARCH=x86_64],
+  [AC_MSG_ERROR("No assembler code for CPU $host_cpu")]
+)
+AC_DEFINE([ARCH], [ARCH], [CPU is $host_cpu])
+
+# Define variables
+AC_DEFINE([DONATOR], [1], [Description of DONATOR])
+AC_DEFINE([DONATORS], [1], [Description of DONATORS])
+
 #
 # Checks for libraries.
 #

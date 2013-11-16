@@ -47,12 +47,6 @@
    #error "MAX_PATH is undefined"
 #endif 
 
-// define Sleep
-#ifndef _WIN32
-   #define Sleep(x)      sleep(x)
-   #define _getcwd(x, y) getcwd(x, y)
-#endif
-
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>
@@ -65,10 +59,6 @@
 #include <locale.h>
 #include "argtable2.h"
 #include "comskip.h"
-
-#define bool			int
-#define true			1
-#define false			0
 
 // Define detection methods
 #define BLACK_FRAME		1

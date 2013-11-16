@@ -1,5 +1,14 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
+/* CPU is $host_cpu */
+#undef ARCH
+
+/* Description of DONATOR */
+#undef DONATOR
+
+/* Description of DONATORS */
+#undef DONATORS
+
 /* Define to 1 if you have the <fcntl.h> header file. */
 #undef HAVE_FCNTL_H
 

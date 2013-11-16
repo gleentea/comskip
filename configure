@@ -4091,6 +4091,28 @@ $as_echo "$as_me: WARNING: *** Please add $host to configure.ac checks!" >&2;}
                 ;;
 esac
 
+# Checks for HostCPU
+case $host_cpu in #(
+  i?86) :
+    ARCH=i386 ;; #(
+  x86_64) :
+    ARCH=x86_64 ;; #(
+  *) :
+    as_fn_error $? "\"No assembler code for CPU $host_cpu\"" "$LINENO" 5
+ ;;
+esac
+
+$as_echo "#define ARCH ARCH" >>confdefs.h
+
+
+# Define variables
+
+$as_echo "#define DONATOR 1" >>confdefs.h
+
+
+$as_echo "#define DONATORS 1" >>confdefs.h
+
+
 #
 # Checks for libraries.
 #
