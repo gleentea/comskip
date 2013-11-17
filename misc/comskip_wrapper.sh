@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 #
 # Interpret TS file by comskip, and cut CM file by ffmpeg.
@@ -23,27 +23,83 @@ if ! test -f $2; then
 fi
 
 COMSKIP=/usr/local/bin/comskip
+FFMPEG=ffmpeg
 OPTIONS=--csvout
 INIFILE=$1
 TS_FILE=$2
 
-exec LD_LIBRARY_PATH=/usr/local/lib ${COMSKIP} ${OPTIONS} --ini=${INIFILE} ${TS_FILE}
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/local/lib 
+#${COMSKIP} ${OPTIONS} --ini=${INIFILE} ${TS_FILE}
 
-if test $? eq 1; then
-    echo "comskip failed CM detect...exit" 1>&2
-    exit 1
-fi
+FEXT="${TS_FILE##*.}"
+FILE_NAME=`basename ${TS_FILE} ${FEXT}`
 
-FILE_NAME=`basename ${TS_FILE}`
-
-if ! test -f `pwd`/${FILE_NAME}.vdr; then
+if ! test -f "`pwd`/${FILE_NAME}vdr"; then
     echo ".vdr file does not exists...exit" 1>&2
     exit 1
 fi
 
-VDR_FILE=`pwd`/${FILE_NAME}.vdr
+#
+# split TS file and concat by ffmpeg
+#
+VDR_FILE="`pwd`/${FILE_NAME}vdr"
+LINE_NO=1
 
+# 'CM' begin time
+BEGIN_TIME=""
+# 'CM' end time
+_END__TIME=""
 
+# main knitting begin time array
+BEGIN_TIME_ARRAY=()
+# main knitting end time array
+_END__TIME_ARRAY=()
 
-# while read [変数名]; do [処理...] ; done < [入力ファイル]
-# ffmpeg -y -i ./3027-12-20130924-0135.m2t -c copy -ss 00:01:02.56 -t 00:00:36.72 -sn ./3027-12-20130924-0135_0001.ts
+for LINE in `cat ${VDR_FILE} | awk {'print $1'}`;
+do
+    if test ${LINE_NO} = 1; then
+        # skip first line
+	LINE_NO=`expr ${LINE_NO} + 1`
+	continue
+    fi
+
+    if `expr \( ${LINE_NO} % 2 \) = 1 > /dev/null`; then
+	BEGIN_TIME="0${LINE}"
+	_END__TIME_ARRAY+=(${BEGIN_TIME})
+    else
+	_END__TIME="0${LINE}"
+	BEGIN_TIME_ARRAY+=(${_END__TIME})
+    fi
+    LINE_NO=`expr ${LINE_NO} + 1`
+done
+
+i=0
+CUT_FILE_LIET=()
+
+for _END__TIME in ${_END__TIME_ARRAY[@]}; do
+
+    BEGIN_TIME=${BEGIN_TIME_ARRAY[${i}]}
+    let i++
+    FILE_PARTS=${i}
+    echo "${FFMPEG} -y -i ${TS_FILE} -c copy -ss ${_END__TIME} -t ${BEGIN_TIME} -sn `pwd`/${FILE_NAME}-${FILE_PARTS}.ts"
+    CUT_FILE_LIST+=(`pwd`/${FILE_NAME}-${FILE_PARTS}.ts)
+    # ffmpeg -i <input_data> -ss <start_sec> -t <play_time> <output_data>
+    ${FFMPEG} -y -i ${TS_FILE} -c copy -ss ${_END__TIME} -t ${BEGIN_TIME} -sn `pwd`/${FILE_NAME}-${FILE_PARTS}.ts
+done
+
+#
+# concat CM cut files
+#
+FFMPEG_CONCAT_STR="concat:"
+i=0
+for FILE in ${CUT_FILE_LIET[@]}; do
+    if test ${i} != 0; then
+        FFMPEG_CONCAT_STR=${FFMPEG_CONCAT_STR}"|"
+    fi
+    FFMPEG_CONCAT_STR=${FFMPEG_CONCAT_STR}${CUT_FILE_LIST[${i}]}
+    let i++
+done
+
+OUTPUT_FILE="`pwd`/CUT-${FILE_NAME}ts"
+echo "${FFMPEG} -i \"${FFMPEG_CONCAT_STR}\" -c copy ${OUTPUT_FILE}"
+${FFMPEG} -i \"${FFMPEG_CONCAT_STR}\" -c copy ${OUTPUT_FILE}
