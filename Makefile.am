@@ -3,7 +3,7 @@ dist-hook: changelog
 
 # configure.ac
 changelog: configure.ac
-        git log --stat --name-only --date=short --abbrev-commit > ChangeLog
+	git log --stat --name-only --date=short --abbrev-commit > ChangeLog
 
 # install directory
 bin_PROGRAMS           = comskip

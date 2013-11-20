@@ -1,4 +1,8 @@
 #!/bin/sh
 
+# create m4 dir
+if ! test -d m4; then
+    mkdir m4;
+fi
 # exec autoreconf
 autoreconf -vi
