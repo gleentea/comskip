@@ -73,6 +73,11 @@ do
     LINE_NO=`expr ${LINE_NO} + 1`
 done
 
+if test ${#_END__TIME_ARRAY[@]} -eq 0; then
+    echo "It seems no commercials is found."
+    exit 2
+fi
+
 i=0
 CUT_FILE_LIST=()
 
