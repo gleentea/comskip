@@ -90,7 +90,6 @@ fi
 AC_CHECK_HEADERS([fcntl.h inttypes.h locale.h memory.h stdlib.h string.h sys/timeb.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
-AC_CHECK_HEADER_STDBOOL
 AC_C_INLINE
 AC_TYPE_INT64_T
 AC_TYPE_SIZE_T
@@ -100,10 +99,9 @@ AC_TYPE_UINT8_T
 
 # Checks for library functions.
 AC_FUNC_FSEEKO
-AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_FUNC_STRTOD
-AC_CHECK_FUNCS([gettimeofday memset sqrt strchr strerror strrchr strstr strtol])
+AC_CHECK_FUNCS([gettimeofday memset sqrt strchr strerror strrchr strstr strtol malloc])
 
 # Setting for generate Makefile location
 AC_CONFIG_FILES([Makefile])
