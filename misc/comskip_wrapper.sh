@@ -95,7 +95,7 @@ for _END__CSEC in ${_END__CSEC_ARRAY[@]}; do
     # calculate original time for beginning
     BEGIN_SEC=`expr ${BEGIN_CSEC} / 100`
     BEGIN_CENTISEC=`expr ${BEGIN_CSEC} % 100`
-    BEGIN_TIME="${BEGIN_SEC}.${BEGIN_CENTISEC}"
+    BEGIN_TIME=`printf '%d.%02d' ${BEGIN_SEC} ${BEGIN_CENTISEC}`
 
     let i++
     FILE_PARTS=${i}
@@ -104,7 +104,7 @@ for _END__CSEC in ${_END__CSEC_ARRAY[@]}; do
     DIFF_TIME=`expr ${_END__CSEC} - ${BEGIN_CSEC}`
     DIFF_SEC=`expr ${DIFF_TIME} / 100`
     DIFF_CENTISEC=`expr ${DIFF_TIME} % 100`
-    PLAY_TIME="${DIFF_SEC}.${DIFF_CENTISEC}"
+    PLAY_TIME=`printf '%d.%02d' ${DIFF_SEC} ${DIFF_CENTISEC}`
     #echo "DEBUG: $_END__CSEC - $BEGIN_CSEC = ${DIFF_SEC}.${DIFF_CENTISEC}"
     #mkfifo "$(pwd)/${FILE_NAME}-${FILE_PARTS}.ts"
     # ffmpeg -i <input_data> -ss <start_sec> -t <play_time> <output_data>
