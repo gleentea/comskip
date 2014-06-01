@@ -35,7 +35,7 @@ esac
 # Checks for HostCPU
 AS_CASE([$host_cpu],
   [i?86],   [ARCH=i386],
-  [x86_64], [ARCH=x86_64],
+  [x86_64|amd64], [ARCH=x86_64],
   [AC_MSG_ERROR("No assembler code for CPU $host_cpu")]
 )
 AC_DEFINE([ARCH], [ARCH], [CPU is $host_cpu])
