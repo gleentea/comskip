@@ -56,7 +56,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <locale.h>
-#include "argtable2.h"
+#include <unistd.h>
 #include "comskip.h"
 
 // Define detection methods
@@ -7071,6 +7071,10 @@ static int myremove( char * f)
 #endif
 }
 
+FILE* LoadSettings(int argc, char** argv)
+{
+}
+#if 0
 FILE* LoadSettings(int argc, char ** argv)
 {
   char				data[20000];
@@ -7785,6 +7789,7 @@ FILE* LoadSettings(int argc, char ** argv)
   arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
   return (in_file);
 }
+#endif
 
 void ProcessARInfoInit(int minY, int maxY, int minX, int maxX)
 {
