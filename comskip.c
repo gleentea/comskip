@@ -57,6 +57,7 @@
 #include <fcntl.h>
 #include <locale.h>
 #include <unistd.h>
+#include <getopt.h>
 #include "comskip.h"
 
 // Define detection methods
@@ -7071,9 +7072,165 @@ static int myremove( char * f)
 #endif
 }
 
+void usage()
+{
+    printf("TODO: usage");
+}
+
 FILE* LoadSettings(int argc, char** argv)
 {
+    char *infile=NULL, *outdir=NULL;
+    enum {
+        OPT_ZPCUT,
+        OPT_ZPCHAPTER,
+        OPT_VIDEOREDO,
+        OPT_CVSOUT,
+        OPT_QUALITY,
+        OPT_PLIST,
+        OPT_TIMING,
+        OPT_INI,
+        OPT_LOGO,
+        OPT_CUT,
+        OPT_OUTPUT,
+        OPT_SELFTEST,
+    }OPT_TYPE;
+    char ch;
+    struct {
+        bool playnice;
+        bool zpcut;
+        bool zpchapter;
+        bool videoredo;
+        bool cvsout;
+        bool quality;
+        bool plist;
+        int detectmethod;
+        int pid;
+        int dump;
+        bool ts;
+        bool help;
+        bool play;
+        bool timing;
+        bool debugwindow;
+        bool quiet;
+        bool demux;
+        bool verbose;
+        char* ini;
+        char* logo;
+        char* cut;
+        char* output;
+        int selftest;
+    } config;
+    struct option longopts[] = {
+        {"playnice",     no_argument,       NULL, 'n'},
+        {"zpcut",        no_argument,       &config.zpcut,     true},
+        {"zpchapter",    no_argument,       &config.zpchapter, true},
+        {"videoredo",    no_argument,       &config.videoredo, true},
+        {"cvsout",       no_argument,       &config.cvsout,    true},
+        {"quality",      no_argument,       &config.quality,   true},
+        {"plist",        no_argument,       &config.plist,     true},
+        {"detectmethod", required_argument, NULL, 'd'},
+        {"pid",          required_argument, NULL, 'p'},
+        {"dump",         required_argument, NULL, 'u'},
+        {"ts",           no_argument,       NULL, 't'},
+        {"help",         no_argument,       NULL, 'h'},
+        {"play",         no_argument,       NULL, 's'},
+        {"timing",       no_argument,       &config.timing,    true},
+        {"debugwindow",  no_argument,       NULL, 'w'},
+        {"quiet",        no_argument,       NULL, 'q'},
+        {"demux",        no_argument,       NULL, 'm'},
+        {"verbose",      required_argument, NULL, 'v'},
+        {"ini",          required_argument, NULL, OPT_INI},
+        {"logo",         required_argument, NULL, OPT_LOGO},
+        {"cut",          required_argument, NULL, OPT_CUT},
+        {"output",       required_argument, NULL, OPT_OUTPUT},
+        {"selftest",     required_argument, NULL, OPT_SELFTEST},
+        {0, 0, 0, 0}
+    };
+
+    memset(&config, sizeof(config), false);
+    
+    // start opt analyze
+    while ((ch = getopt_long(argc, argv, "nd:p:u:thswqmv:", longopts, NULL)) != -1)
+    {
+        switch (ch){
+        case 'n':
+            config.playnice = true;
+            break;
+        case 'd':
+            config.detectmethod = atoi(optarg);
+            break;
+        case 'p':
+            config.pid = atoi(optarg);
+            break;
+        case 'u':
+            config.dump = atoi(optarg);
+            break;
+        case 't':
+            config.ts = true;
+            break;
+        case 's':
+            config.play = true;
+            break;
+        case 'w':
+            config.debugwindow = true;
+            break;
+        case 'q':
+            config.quiet = true;
+            break;
+        case 'm':
+            config.demux = true;
+            break;
+        case 'v':
+            config.verbose = atoi(optarg);
+            break;
+        case OPT_INI:
+            config.ini = optarg;
+            break;
+        case OPT_LOGO:
+            config.logo = optarg;
+            break;
+        case OPT_CUT:
+            config.cut = optarg;
+            break;
+        case OPT_OUTPUT:
+            config.output = optarg;
+            break;
+        case OPT_SELFTEST:
+            config.selftest = atoi(optarg);
+        case 'h':
+        case ':':
+        case '?':
+            usage();
+            exit(2);
+            break;
+        };
+    }
+    
+    if (optind < argc) 
+    {
+        infile = argv[optind];
+        ++optind;
+    }
+    if (optind < argc)
+    {
+        outdir = argv[optind];
+        ++optind;
+    }
+    // opt analyze end
+    
+    // apply config
+    if (infile == NULL )
+    {
+        // input file not determine
+        usage();
+        exit(2);
+    }
+
+    strrcmp("")
+    
+    return NULL;
 }
+
 #if 0
 FILE* LoadSettings(int argc, char ** argv)
 {
