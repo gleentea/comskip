@@ -43,6 +43,7 @@
 
 #ifdef __FreeBSD__
 #include <sys/time.h>
+#include <sys/stat.h>
 #endif
 
 int pass = 0;
@@ -242,14 +243,12 @@ extern int selftest;
    static int dump_seek = 0;		// Set to 1 to dump the seeking process
 #endif
 
-#if 0
 #ifdef _WIN32
    struct _stati64 instat;
    #define filesize instat.st_size
 #else
    struct stat instat;
    #define filesize instat.st_size
-#endif
 #endif
 
 extern int frame_count;
