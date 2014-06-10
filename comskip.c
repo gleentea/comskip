@@ -58,6 +58,7 @@
 #include <locale.h>
 #include <unistd.h>
 #include <getopt.h>
+#include <libavcodec/avcodec.h>
 #include "comskip.h"
 
 // Define detection methods
@@ -654,7 +655,7 @@ unsigned int		min_black_frames_for_break = 1;
 bool			detectBlackFrames;
 bool			detectSceneChanges;
 int                     dummy1;
-unsigned char*		frame_ptr;
+unsigned char*		g_frame_ptr;
 int                     dummy2;
 bool			sceneHasChanged;
 int			sceneChangePercent;
@@ -2743,7 +2744,6 @@ int DetectCommercials(int f, double pts)
     bool	logoAppeared = false;
     long oldBlack_count;
 
-
     if (loadingTXT)
         return(0);
     if (loadingCSV)
@@ -2776,7 +2776,7 @@ int DetectCommercials(int f, double pts)
         ticker_tape = ticker_tape_percentage * height / 100;
     if (ticker_tape)
     {
-        memset(&frame_ptr[width*(height - ticker_tape)], 0, width*ticker_tape);
+        memset(&g_frame_ptr[width*(height - ticker_tape)], 0, width*ticker_tape);
     }
     if (ignore_side)
     {
@@ -2784,13 +2784,14 @@ int DetectCommercials(int f, double pts)
         {
             for (j = 0; j < ignore_side; j++)
             {
-                frame_ptr[width*i + j] = 0;
-                frame_ptr[width*i + (width -1) - j] = 0;
+                g_frame_ptr[width*i + j] = 0;
+                g_frame_ptr[width*i + (width -1) - j] = 0;
             }
         }
     }
 
     oldBlack_count = black_count;	/*Gil*/
+
     CheckSceneHasChanged();
     isBlack = oldBlack_count != black_count;	/*Gil*/
 
@@ -2821,7 +2822,7 @@ int DetectCommercials(int f, double pts)
         }
         if (logoInfoAvailable)
         {
-            currentGoodEdge = CheckStationLogoEdge(frame_ptr);
+            currentGoodEdge = CheckStationLogoEdge(g_frame_ptr);
             curLogoTest = (currentGoodEdge > logo_threshold);
             lastLogoTest = ProcessLogoTest(frame_count, curLogoTest, false);
             if (!lastLogoTest && !startOverAfterLogoInfoAvail && logoBuffersFull)   // Lost logo
@@ -7974,7 +7975,7 @@ int MatchCutScene(unsigned char *cutscene)
         {
             if (c < MAXCSLENGTH)
             {
-                d = (int)frame_ptr[y * width + x] - (int)(cutscene[c]);
+                d = (int)g_frame_ptr[y * width + x] - (int)(cutscene[c]);
                 if (d > edge_level_threshold || d < -edge_level_threshold)
                     delta += 1;
             }
@@ -8001,7 +8002,7 @@ void RecordCutScene(int frame_count, int brightness)
         {
             if (c < MAXCSLENGTH)
             {
-                cs[c++] = frame_ptr[y * width + x];
+                cs[c++] = g_frame_ptr[y * width + x];
             }
         }
     }
@@ -8112,7 +8113,7 @@ bool CheckSceneHasChanged(void)
         {
             if (haslogo[y * width + x])
                 continue;
-            hereBright = frame_ptr[y * width + x];
+            hereBright = g_frame_ptr[y * width + x];
             histogram[hereBright]++;
             if (hereBright > test_brightness)
                 brightCountminY++;
@@ -8126,7 +8127,7 @@ bool CheckSceneHasChanged(void)
         {
             if (haslogo[y * width + x])
                 continue;
-            hereBright = frame_ptr[y * width + x];
+            hereBright = g_frame_ptr[y * width + x];
             histogram[hereBright]++;
             if (hereBright > test_brightness)
                 brightCountmaxY++;
@@ -8140,7 +8141,7 @@ bool CheckSceneHasChanged(void)
         {
             if (haslogo[y * width + x])
                 continue;
-            hereBright = frame_ptr[y * width + x];
+            hereBright = g_frame_ptr[y * width + x];
             histogram[hereBright]++;
             if (hereBright > test_brightness)
                 brightCountminX++;
@@ -8156,7 +8157,7 @@ bool CheckSceneHasChanged(void)
             {
                 if (haslogo[y * width + x])
                     continue;
-                hereBright = frame_ptr[y * width + x];
+                hereBright = g_frame_ptr[y * width + x];
                 histogram[hereBright]++;
                 if (hereBright > test_brightness)
                     brightCountmaxX++;
@@ -8179,7 +8180,7 @@ bool CheckSceneHasChanged(void)
     {
         for (x = lineStart[y]; x <= lineEnd[y]; x += step)
         {
-            hereBright = frame_ptr[y * width + x];
+            hereBright = g_frame_ptr[y * width + x];
             histogram[hereBright]++;
             if (hereBright > test_brightness)
                 brightCount++;
@@ -8193,7 +8194,7 @@ bool CheckSceneHasChanged(void)
     {
         for (x = lineStart[y]; x <= lineEnd[y]; x += step)
         {
-            hereBright = frame_ptr[y * width + x];
+            hereBright = g_frame_ptr[y * width + x];
             histogram[hereBright]++;
             if (hereBright > test_brightness)
                 brightCount++;
@@ -9307,8 +9308,8 @@ void FillLogoBuffer(void)
         if (logoFrameNum[i]  && logoFrameNum[i] < logoFrameNum[oldestLogoBuffer]) oldestLogoBuffer = i;
     }
 
-    i = min(logoFrameBufferSize, width * height * sizeof(frame_ptr[0]));
-    memcpy(logoFrameBuffer[newestLogoBuffer], frame_ptr, i);
+    i = min(logoFrameBufferSize, width * height * sizeof(g_frame_ptr[0]));
+    memcpy(logoFrameBuffer[newestLogoBuffer], g_frame_ptr, i);
     EdgeDetect(logoFrameBuffer[newestLogoBuffer], newestLogoBuffer);
     if ((!logoBuffersFull) && (newestLogoBuffer == num_logo_buffers - 1)) logoBuffersFull = true;
 }
@@ -10235,7 +10236,7 @@ void InitLogoBuffers(void)
 
             lheight = MAXHEIGHT;
             lwidth = MAXWIDTH;
-            logoFrameBufferSize = lwidth * lheight * sizeof(frame_ptr[0]);
+            logoFrameBufferSize = lwidth * lheight * sizeof(g_frame_ptr[0]);
             for (i = 0; i < num_logo_buffers; i++)
             {
                 logoFrameBuffer[i] = malloc(logoFrameBufferSize);
@@ -10876,10 +10877,10 @@ void OutputFrame(int frame_number)
         fprintf(raw, "%3i", y);
         for (x = 0; x < videowidth; x++)
         {
-            if (frame_ptr[y * width + x] < 30)
+            if (g_frame_ptr[y * width + x] < 30)
                 fprintf(raw, ";   ");
             else
-                fprintf(raw, ";%3i", frame_ptr[y * width + x]);
+                fprintf(raw, ";%3i", g_frame_ptr[y * width + x]);
 
         }
         fprintf(raw, "\n");

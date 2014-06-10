@@ -91,7 +91,7 @@ typedef struct VideoState
     double          audio_clock;
     AVStream        *audio_st;
     AVStream        *subtitle_st;
-
+#define AVCODEC_MAX_AUDIO_FRAME_SIZE 192000
     DECLARE_ALIGNED(16, uint8_t, audio_buf[(AVCODEC_MAX_AUDIO_FRAME_SIZE * 3) / 2]);
     unsigned int    audio_buf_size;
     unsigned int    audio_buf_index;
@@ -297,7 +297,7 @@ extern int output_timing;
 extern int output_srt;
 extern int output_smi;
 
-extern unsigned char *frame_ptr;
+extern unsigned char *g_frame_ptr;
 extern int lastFrameWasSceneChange;
 extern int live_tv_retries;
 extern int dvrms_live_tv_retries;
@@ -725,7 +725,7 @@ int SubmitFrame(AVStream        *video_st, AVFrame         *pFrame , double pts)
     if (pFrame->linesize[0] > 2000 || pFrame->height > 1200 || pFrame->linesize[0] < 100 || pFrame->height < 100)
     {
         //				printf("Panic: illegal height, width or frame period\n");
-        frame_ptr = NULL;
+        g_frame_ptr = NULL;
         return(0);
     }
     if (height != pFrame->height && pFrame->height > 100 && pFrame->height < 2000)
@@ -745,8 +745,8 @@ int SubmitFrame(AVStream        *video_st, AVFrame         *pFrame , double pts)
     }
     if (changed) Debug(2, "Format changed to [%d : %d]\n", videowidth, height);
     infopos = headerpos;
-    frame_ptr = pFrame->data[0];
-    if (frame_ptr == NULL)
+    g_frame_ptr = pFrame->data[0];
+    if (g_frame_ptr == NULL)
     {
         return(0);; // return; // exit(2);
     }
@@ -834,7 +834,7 @@ void DecodeOnePicture(FILE * f, double pts, double length)
     pts_offset = 0.0;
 
     //     Debug ( 5,  "Seek to %f\n", pts);
-    frame_ptr = NULL;
+    g_frame_ptr = NULL;
     packet = &(is->audio_pkt);
 
     for(;;)
