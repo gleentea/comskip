@@ -58,7 +58,6 @@
 #include <locale.h>
 #include <unistd.h>
 #include <getopt.h>
-#include <libavcodec/avcodec.h>
 #include "comskip.h"
 
 // Define detection methods
@@ -2791,7 +2790,6 @@ int DetectCommercials(int f, double pts)
     }
 
     oldBlack_count = black_count;	/*Gil*/
-
     CheckSceneHasChanged();
     isBlack = oldBlack_count != black_count;	/*Gil*/
 
