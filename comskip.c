@@ -201,7 +201,6 @@ frame_info*	frame = NULL;
 long		frame_count = 0;
 long		max_frame_count;
 
-static int aaa;
 #define F2V(X) (frame != NULL ? ((X) <= 0 ? frame[1].pts : ((X) >= frame_count ? frame[frame_count - 1].pts : frame[X].pts )) : (X) / fps)
 #define assert(T) (aaa = ((T) ? 1 : *(int *)0))
 #define F2T(X) (F2V(X))
@@ -2372,7 +2371,6 @@ bool ReviewResult()
     int grf = 2;
     int i,j;
     long prev;
-    int b = -1;
     char tsfilename[MAX_PATH];
     if (!framearray) grf = 0;
     output_demux = 0;
@@ -3056,10 +3054,9 @@ void InsertBlackFrame(int f, int b, int u, int v, int c)
 
 bool BuildMasterCommList(void)
 {
-    int		i, j, t, c,b;
+    int		i, j, t, c;
     int		a,k,count;
     int		cp,cpf, maxsc,rsc;
-    int lastLogoTest;
     int 	silence_count = 0;
     int		silence_start = 0;
     int		summed_volume1 = 0;
@@ -3075,8 +3072,6 @@ bool BuildMasterCommList(void)
     int		plataus;
 
     double	length;
-    long	totalFrames = 0;
-    int		counter = 0;
     double	new_ar_ratio;
     FILE*	logo_file = NULL;
     bool	foundCommercials = false;
@@ -3906,7 +3901,6 @@ void BuildPunish()
     int j;
     int t;
     int l;
-    int shorttest;
     if (!length_sorted)
     {
         for (i=0 ; i< block_count; i++)
@@ -3958,17 +3952,13 @@ void WeighBlocks(void)
     double  cl;
     double	combined_length;
     double	tolerance;
-    double	sumb = 0.0;
-    double	sumf = 0.0;
     double  wscore = 0.0;
     double  lscore = 0.0;
     bool	end_deleted = false;
     bool	start_deleted = false;
-    int		framecount = 0;
     double	max_score = 99.99;
     int		max_combined_count = 25;
     bool	breakforcombine = false;
-    double	schange_modifier;
 
     if (commDetectMethod & AR)
     {
@@ -5758,10 +5748,8 @@ bool OutputBlocks(void)
     long	prev;
     double comlength;
     double	threshold;
-    bool	lastBlockWasCommercial = false;
     bool	foundCommercials = false;
     bool	deleted = false;
-    char	cs[10];
 
     if (global_threshold >= 0.0)
     {
@@ -6266,7 +6254,7 @@ void OutputStrict(double len, double delta, double tol)
 
 void OutputTraining()
 {
-    int i,s,e,r;
+    int i,s;
     if (!output_training)
         return;
     training_file = myfopen("comskip.csv", "a+");
@@ -6612,8 +6600,6 @@ char * FindString(char* str1, char* str2, char *v)
     static char foundText[1024];
     char        tmp[255];
     char        *t;
-    bool        negative=false;
-    double      res;
     int         found = 0;
 
     if (str1 == 0)
@@ -7127,7 +7113,6 @@ FILE* LoadSettings(int argc, char** argv)
     int mil_time;
     FILE* logo_file = NULL;
     FILE* log_file = NULL;
-    char* CEW_argv[10];
     struct {
         bool playnice;
         bool zpcut;
@@ -7961,7 +7946,7 @@ void ProcessARInfo(int minY, int maxY, int minX, int maxX)
 
 int MatchCutScene(unsigned char *cutscene)
 {
-    int i,j,x,y,d;
+    int x,y,d;
     int delta = 0;
     int step = 4;
     int c=0;
@@ -7987,8 +7972,7 @@ void RecordCutScene(int frame_count, int brightness)
 {
     char cs[MAXCSLENGTH];
     int c;
-    int i,j,x,y;
-    int delta = 0;
+    int x,y;
     int step = 4;
 
     if (width > 800) step = 8;
@@ -8031,7 +8015,7 @@ void RecordCutScene(int frame_count, int brightness)
 
 void LoadCutScene(const char *filename)
 {
-    int i,j,s,b,c;
+    int i,j,b,c;
     cutscene_file = myfopen(filename,"rb");
     if (cutscene_file != NULL)
     {
@@ -8648,10 +8632,8 @@ void PrintCCBlocks(void)
 
 void EdgeDetect(unsigned char* frame_ptr, int maskNumber)
 {
-    int				i;
     int				x;
     int				y;
-    unsigned char	herePixel;
     hedge_count = 0;
     vedge_count = 0;
 #ifdef MAXMIN_LOGO_SEARCH
@@ -8846,9 +8828,7 @@ double CheckStationLogoEdge(unsigned char* testFrame)
     int		index;
     int		x;
     int		y;
-    int		herePixel;
     int		testEdges = 0;
-    int		testNotEdges = 0;
 
     int goodEdges = 0;
 
@@ -8997,9 +8977,7 @@ double DoubleCheckStationLogoEdge(unsigned char* testFrame)
     int		index;
     int		x;
     int		y;
-    int		herePixel;
     int		testEdges = 0;
-    int		testNotEdges = 0;
 
     int goodEdges = 0;
 
@@ -9285,7 +9263,6 @@ bool ProcessLogoTest(int framenum_real, int curLogoTest, int close)
 
 void ResetLogoBuffers(void)
 {
-    int i;
     newestLogoBuffer = oldestLogoBuffer = 0;
     if (newestLogoBuffer == num_logo_buffers) newestLogoBuffer = 0; // rotates buffer
     logoFrameNum[newestLogoBuffer] = framenum_real;
@@ -9295,8 +9272,6 @@ void ResetLogoBuffers(void)
 void FillLogoBuffer(void)
 {
     int i;
-    int x;
-    int y;
     newestLogoBuffer++;
     if (newestLogoBuffer == num_logo_buffers) newestLogoBuffer = 0; // rotates buffer
     logoFrameNum[newestLogoBuffer] = framenum_real;
@@ -9314,9 +9289,8 @@ void FillLogoBuffer(void)
 
 bool SearchForLogoEdges(void)
 {
-    int		i,j;
+    int		i;
     int		x;
-    int		maxY,minY;
     int		y;
     double scale = ((double)height / 572) * ( (double) videowidth / 720 );
     double	logoPercentageOfScreen;
@@ -9326,8 +9300,6 @@ bool SearchForLogoEdges(void)
     int		tempMaxX;
     int		tempMinY;
     int		tempMaxY;
-    int		excludeUnderX = videowidth / 2;
-    int		index;
     int		last_non_logo_frame;
     int		logoFound = false;
     tlogoMinX = edge_radius + border;
@@ -9688,7 +9660,6 @@ void DumpEdgeMask(unsigned char* buffer, int direction)
     int x;
     int y;
     char outbuf[MAXWIDTH+1];
-    int i;
     switch (direction)
     {
     case HORIZ:
@@ -9744,7 +9715,6 @@ void DumpEdgeMasks(void)
     int x;
     int y;
     char outbuf[MAXWIDTH+1];
-    int i;
 
     for (x = clogoMinX; x <= clogoMaxX; x++)
     {
@@ -9802,7 +9772,6 @@ double CalculateLogoFraction(int start, int end)
 {
     int		i,j;
     int		count=0;
-    bool	logoPresent = false;
     j = 0;
     for (i = start; i <= end; i++)
     {
@@ -9831,7 +9800,6 @@ bool CheckFrameForLogo(int i)
 char CheckFramesForCommercial(int start, int end)
 {
     int		i;
-    int		j;
     if (start >= end )
         return ('0');						// Too short to decide
     i = 0;
@@ -9851,7 +9819,6 @@ char CheckFramesForCommercial(int start, int end)
 char CheckFramesForReffer(int start, int end)
 {
     int		i;
-    int		j;
     if (reffer_count < 0)
         return(' ');
     if (start >= end )
@@ -9980,8 +9947,6 @@ void LoadLogoMaskData(void)
     char	data[2000];
     char	*ptr = NULL;
     long	tmpLong = 0;
-    long	start = 0;
-    long	end = 0;
     size_t	len = 0;
 
     logo_file = myfopen(logofilename, "r");
@@ -11200,7 +11165,6 @@ void OutputAspect(void)
     //	long	j;
     char	array[MAX_PATH];
     FILE*	raw;
-    char	lp[10];
 
     if (!output_aspect)
         return;
@@ -11430,33 +11394,23 @@ void PrintArgs(void)
 void ProcessCSV(FILE *in_file)
 {
     bool	lineProcessed = false;
-    bool	lastFrameHadLogo = false;
-    int		logoTrendCounter = 0;
     bool	lastLogoTest = false,curLogoTest = false;
     char	line[2048];
     char	split[256];
     int		cont;
-
-    int		old_height = 0;
-    int		old_width = 0;
     int		minminY=10000,maxmaxY = 0;
     int		minminX=10000,maxmaxX = 0;
-    int		hi;
-    int		silence_count = 0;
-    int     schange_found = 0;
     int		cutscene_nonzero_count = 0;
     int old_format = true;
     int     use_bright = 0;
     double  t;
-    int		i,j,k;
+    int		i;
     int		x;
     int		f;
     int		col;
-    int		curframe;
     int		ccDataFrame;
     //	__int64 fileendpos;
 
-    double	cur_ar_ratio;
     //	time_t	ltime;
 again:
     logoInfoAvailable = true;
@@ -12172,9 +12126,6 @@ void AddXDS(unsigned char hi, unsigned char lo)
 
 void AddCC(int i)
 {
-    int offset;
-    static int		col = 0;
-    static int		row = 0;
     bool			tempBool;
     long			current_frame = framenum;
     int hi,lo;
@@ -13103,12 +13054,10 @@ void BuildCommListAsYouGo(void)
     int			k;
     int			x;
     int			len;
-    int			marked = 0;
     double		remainder;
     double		added;
     bool		oldbreak;
     int local_blacklevel;
-    static int	runs = 0;
     bool		useLogo;
     int*		onTheFlyBlackFrame;
     int			onTheFlyBlackCount = 0;
@@ -13407,7 +13356,6 @@ double get_fps()
 
 void set_fps(unsigned int fp)
 {
-    double old_fps = fps;
     static int showed_fps=0;
     fps = (double)900000* 30 / (double)fp;
     if (/* old_fps != fps && */ showed_fps++ < 4)
