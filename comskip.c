@@ -2732,7 +2732,6 @@ int DetectCommercials(int f, double pts)
 {
     bool isBlack = 0;	/*Gil*/
     int i,j;
-    bool	logoAppeared = false;
     long oldBlack_count;
 
     if (loadingTXT)
@@ -5732,7 +5731,7 @@ void BuildCommercial()
 
 bool OutputBlocks(void)
 {
-    int		i,k,laststart;
+    int		i,k;
     long	prev;
     double comlength;
     double	threshold;
@@ -6242,7 +6241,7 @@ void OutputStrict(double len, double delta, double tol)
 
 void OutputTraining()
 {
-    int i,s;
+    int i;
     if (!output_training)
         return;
     training_file = myfopen("comskip.csv", "a+");
@@ -6701,7 +6700,6 @@ void LoadIniFile()
 {
     //	FILE*				ini_file = NULL;
     char				data[60000];
-    char				tempstr[MAX_PATH];
     char*				ts;
     size_t				len = 0;
     double				tmp;
@@ -7080,7 +7078,7 @@ void usage()
 FILE* LoadSettings(int argc, char** argv)
 {
     FILE* test_file = NULL;
-    enum {
+    enum OPT_TYPE{
         OPT_ZPCUT,
         OPT_ZPCHAPTER,
         OPT_VIDEOREDO,
@@ -7093,7 +7091,7 @@ FILE* LoadSettings(int argc, char** argv)
         OPT_CUT,
         OPT_OUTPUT,
         OPT_SELFTEST,
-    }OPT_TYPE;
+    };
     char ch;
     int i;
     time_t ltime;
@@ -8027,10 +8025,10 @@ void LoadCutScene(const char *filename)
 
 bool CheckSceneHasChanged(void)
 {
-    int		i,j,k;
+    int		i;
     int		x;
     int		y;
-    int     delta,count;
+    int     delta;
     int		step;
     long	similar = 0;
     static long prevsimilar = 0;
@@ -8044,10 +8042,7 @@ bool CheckSceneHasChanged(void)
     int		brightCountminY;
     int		brightCountmaxX;
     int		brightCountmaxY;
-    int		pictureHeight;
     long	cause;
-    int		hi;
-    double	cur_ar_ratio;
     int  uniform = 0;
     double scale = 1.0;
 
