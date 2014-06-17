@@ -1422,8 +1422,6 @@ bool BuildBlocks(bool recalc)
     Debug(8, "Black Frame List\n---------------------------\nBlack Frame Count = %i\nnr \tframe\tbright\tuniform\tvolume\t\tcause\tdimcount  bright\n", black_count);
     for (k = 0; k < black_count; k++)
     {
-        if (black[k].frame == 3200)
-            k = k;
         Debug(8, "%3i\t%6i\t%6i\t%6i\t%6i\t%6s\t%6i\t%6i\n", k, black[k].frame, black[k].brightness, black[k].uniform, black[k].volume,&(CauseString(black[k].cause)[10]), frame[black[k].frame].dimCount, frame[black[k].frame].hasBright);
         if (k+1 < black_count && black[k].frame+1 != black[k+1].frame)
             Debug(8, "-----------------------------\n");
@@ -1448,10 +1446,6 @@ bool BuildBlocks(bool recalc)
 again:
     while(i < black_count || a < ar_block_count)
     {
-        if (!(commDetectMethod & LOGO) && i < black_count && (black[i].cause & (C_s | C_l)))
-        {
-            i = i;
-        }
         cause = 0;
         b_start = black[i].frame;
         cause |= black[i].cause;
@@ -2749,8 +2743,6 @@ int DetectCommercials(int f, double pts)
         InitComSkip();
     frame_count = framenum_real = framenum+1;
 
-    if (frame_count == 116)
-        frame_count = frame_count;
 
     if (framenum_real < 0) return 0;
     if (play_nice) Sleep(play_nice_sleep);
@@ -3030,8 +3022,6 @@ void InsertBlackFrame(int f, int b, int u, int v, int c)
         }
 
 
-        if (f == 49425)
-            f = f;
 
         black_count++;
         i = black_count-2;
@@ -3522,8 +3512,6 @@ bool BuildMasterCommList(void)
         very_low_volume_count = 0;
         for (i=1; i <frame_count; i++)
         {
-            if (i == 46455)
-                i = i;
             if (min_silence > 0)
             {
                 if (0 <= frame[i].volume && frame[i].volume < max_silence)
@@ -8396,8 +8384,6 @@ bool CheckSceneHasChanged(void)
 
     if (brightness < min_brightness_found) min_brightness_found = brightness;
 
-    if (frame_count == 100)
-        frame_count = frame_count;
 
     if (framearray) frame[frame_count].cutscenematch = 100;
     {
@@ -9193,7 +9179,7 @@ bool ProcessLogoTest(int framenum_real, int curLogoTest, int close)
                 {
                     i = logo_block[logo_block_count].end;
                     if (i<0) i = 0;
-                    for (i = i; i < framenum_real; i++)
+                    for (; i < framenum_real; i++)
                         frame[i].logo_present = false;
                 }
                 Debug
@@ -11591,8 +11577,6 @@ again:
     min_brightness_found = 255;
     for (i = 1; i < frame_count; i++)
     {
-        if (i == 33368)
-            i = i;
     ccagain:
         if (dump_data_file && ccDataFrame == 0)
         {
@@ -11652,11 +11636,6 @@ again:
         {
             //			frame[i].isblack &= C_b;
         }
-        if (frame[i].isblack & C_b)
-            i = i;
-
-        if (frame[i].isblack & C_r)
-            i = i;
 
         if (frame[i].brightness > 0)
         {
@@ -11707,10 +11686,6 @@ again:
         frame[i].ar_ratio = last_ar_ratio;
 
 
-        if (i == 22494)
-            i = i;
-        if (frame[i].isblack == 1)
-            i = i;
 
         if ((commDetectMethod & RESOLUTION_CHANGE))
         {
@@ -12607,16 +12582,12 @@ void ProcessCCData(void)
         if (cctype == 2)
         {
             offset++;
-            if (ccData[offset] & 0x7f)
-                ccDataLen = ccDataLen;
             cc.cc1[0] = ccData[offset++];
             cc.cc1[1] = ccData[offset++];
             AddCC(1);
             cctype = ccData[offset++];
             if (cctype == 4 && ( ccData[offset] & 0x7f) < 32)
             {
-                if (ccData[offset] & 0x7f)
-                    ccDataLen = ccDataLen;
                 cc.cc1[0] = ccData[offset++];
                 cc.cc1[1] = ccData[offset++];
                 AddCC(1);
@@ -12626,13 +12597,9 @@ void ProcessCCData(void)
         else if (cctype == 4)
         {
             offset++;
-            if (ccData[offset] & 0x7f)
-                ccDataLen = ccDataLen;
             cc.cc1[0] = ccData[offset++];
             cc.cc1[1] = ccData[offset++];
             AddCC(1);
-            if (ccData[offset] & 0x7f)
-                ccDataLen = ccDataLen;
             cc.cc1[0] = ccData[offset++];
             cc.cc1[1] = ccData[offset++];
             AddCC(1);
@@ -12642,8 +12609,6 @@ void ProcessCCData(void)
         {
             for (i = 0; i < prevccDataLen; i +=2)
             {
-                if (prevccData[i] & 0x7f)
-                    prevccDataLen = prevccDataLen;
                 cc.cc1[0] = prevccData[i];
                 cc.cc1[1] = prevccData[i+1];
                 AddCC(i/2);
@@ -12652,20 +12617,14 @@ void ProcessCCData(void)
             //			offset += 6;
             cctype = ccData[offset++] & 0x7f;
             cctype = ccData[offset++] & 0x7f;
-            if (ccData[offset] & 0x7f)
-                ccDataLen = ccDataLen;
             cctype = ccData[offset++] & 0x7f;
             cctype = ccData[offset++] & 0x7f;
-            if (ccData[offset] & 0x7f)
-                ccDataLen = ccDataLen;
             cctype = ccData[offset++] & 0x7f;
             cctype = ccData[offset++] & 0x7f;
             //
             cctype = ccData[offset++];
             offset++;
             prevccDataLen = 0;
-            if (ccData[offset] & 0x7f)
-                ccDataLen = ccDataLen;
             prevccData[prevccDataLen++] = ccData[offset++];
             prevccData[prevccDataLen++] = ccData[offset++];
             if (cctype == 2)
@@ -12673,16 +12632,12 @@ void ProcessCCData(void)
                 cctype = ccData[offset++];
                 if (cctype == 4 && ( ccData[offset] & 0x7f) < 32)
                 {
-                    if (ccData[offset] & 0x7f)
-                        ccDataLen = ccDataLen;
                     prevccData[prevccDataLen++] = ccData[offset++];
                     prevccData[prevccDataLen++] = ccData[offset++];
                 }
             }
             else
             {
-                if (ccData[offset] & 0x7f)
-                    ccDataLen = ccDataLen;
 
                 prevccData[prevccDataLen++] = ccData[offset++];
                 prevccData[prevccDataLen++] = ccData[offset++];
@@ -12730,15 +12685,9 @@ void ProcessCCData(void)
                 cc.cc1[0] = ccData[(i * 3) + offset + 1] & 0x7f;
                 cc.cc1[1] = ccData[(i * 3) + offset + 2] & 0x7f;
 
-                if (cctype == 0)
-                    cctype = cctype;
                 if (cctype == 1)
                     AddXDS(ccData[(i * 3) + offset + 1], ccData[(i * 3) + offset + 2]);
 
-                if (cctype == 2)
-                    cctype = cctype;
-                if (cctype == 3)
-                    cctype = cctype;
                 if (cctype != 0 && cctype != 1 )
                     continue;
                 if ( cctype == 0 /* || cctype == 1 */ )
