@@ -9,7 +9,7 @@ changelog: configure.ac
 bin_PROGRAMS           = comskip
 
 # sources
-comskip_SOURCES        = comskip.c mpeg2dec.c video_out_dx.c comskip.h
+comskip_SOURCES        = comskip.c mpeg2dec.c video_out_dx.c comskip.h settings.c
 
 # common build rule
 comskip_CFLAGS         = @CFLAGS@ -Wno-deprecated-declarations -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
